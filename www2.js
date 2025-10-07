@@ -26,8 +26,9 @@ http.createServer(function(req, res){
 		res.write(pageStart);
 		res.write(pageBanner);
 		res.write(pageBody);
-		res.write("\n\t<p>Tأ¤na on " + dateEt.weekDay() + " " + dateEt.longDate() + "</p>");
+		res.write("\n\t<p>Täna on " + dateEt.weekDay() + " " + dateEt.longDate() + "</p>");
 		res.write('\n\t<p>Vaata mu <a href="/vanasonad">vanasõnu</a>.</p>')
+		res.write('\n\t<p>Vaata mu <a href="/hobid">hobisid</a>.</p>')
 		res.write(pageEnd);
 		return res.end();
 	}
@@ -74,6 +75,38 @@ http.createServer(function(req, res){
 			}
 		});
 	}
+
+	//hobide osa
+	else if(currentUrl.pathname === "/hobid"){
+        res.writeHead(200, {"Content-type": "text/html"});
+        res.write(pageStart);
+        res.write(pageBanner);
+        res.write(pageBody);
+        res.write('\n\t<h2>Minu hobid</h2>');
+        res.write('\n\t<ul>');
+        res.write('\n\t\t<li><a href="https://www.basket.ee/">Korvpall</a></li>');
+        res.write('\n\t\t<li><a href="https://level1.ee">Videomängud</a></li>');
+        res.write('\n\t</ul>');
+        res.write('\n\t<img src="/hobifoto.jpg" alt="Hobiga seotud foto">');
+        res.write(pageEnd);
+        return res.end();
+    }
+
+    // universaalne jpg failide teenindamine img kaustast
+    else if(path.extname(currentUrl.pathname) === ".jpg"){
+        let imgPath = path.join(__dirname, "img", path.basename(currentUrl.pathname));
+        fs.readFile(imgPath, (err, data)=>{
+            if (err){
+                res.writeHead(404, {"Content-type": "text/plain"});
+                res.end("Pilt puudub!");
+            }
+            else {
+                res.writeHead(200, {"Content-type": "image/jpeg"});
+                res.end(data);
+            }
+        });
+    }
+
 
 	else {
 		res.end("Viga 404, no veits panid mooda praegu");
